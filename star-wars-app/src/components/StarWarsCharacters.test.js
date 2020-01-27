@@ -1,11 +1,23 @@
 import React from 'react';
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, wait, waitForDomChange } from '@testing-library/react';
 import { getData as mockGetData } from '../api';
 import StarWarsCharacters from './StarWarsCharacters';
 
-// jest.mock('../api');
+jest.mock('../api');
 
-test('renders the star wars character list correctly, with next and previous buttons', () => {
+test('renders the star wars character list correctly, with next and previous buttons', async () => {
+    mockGetData.mockResolvedValueOnce({
+        results: [{
+            name: "Luke Skywalker",
+            height: "172",
+            mass: "77",
+            hair_color: "blond",
+            skin_color: "fair",
+            eye_color: "blue",
+            birth_year: "19BBY",
+            gender: "male"
+        }]
+    });
     const { getByText } = render(<StarWarsCharacters />);
 
     const prevBtn = getByText(/previous/i);
@@ -14,10 +26,8 @@ test('renders the star wars character list correctly, with next and previous but
     fireEvent.click(nextBtn);
     fireEvent.click(prevBtn);
 
-    // const characters = [];
-
-    // expect(mockGetData).toHaveBeenCalledTimes(1);
+    expect(mockGetData).toHaveBeenCalledTimes(1);
     // expect(mockGetData).toHaveBeenCalledWith(characters);
 
-    // wait(() => expect(getByTestId(/list/)));
+    waitForDomChange();
 });
